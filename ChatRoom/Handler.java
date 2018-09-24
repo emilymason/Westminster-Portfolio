@@ -4,6 +4,7 @@
  * results back to the client.
  *
  * @author Greg Gagne 
+ * @author Emily Mason
  */
 
 import java.io.*;
