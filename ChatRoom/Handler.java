@@ -4,7 +4,6 @@
  * results back to the client.
  *
  * @author Greg Gagne 
- * @author Emily Mason
  */
 
 import java.io.*;
@@ -32,13 +31,16 @@ public class Handler
 		{
 			// http://tutorials.jenkov.com/java-json/gson.html
 			Gson gson = new GsonBuilder().create();
+			System.out.println("I entered the server");
 			out = new DataOutputStream(client.getOutputStream());
 
 			// read what the client sent
 			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			System.out.println("I got buffered reader");
 
 			while ((incomingMsg = in.readLine()) != null)
 			{
+				System.out.println(incomingMsg);
 
 				try (Writer writer = new OutputStreamWriter(new FileOutputStream("log.txt", true), "UTF-8"))
 				{
@@ -53,17 +55,34 @@ public class Handler
 					username = cb.username + Server.counter++;
 					Server.users.put(username, client);
 
-					ChatroomResponse cr = new ChatroomResponse(username, Server.users.size(), this.getListOfUsers());
-					String chatroomResponse = gson.toJson(cr);
-					out.writeBytes(chatroomResponse);
 					
+					System.out.println("Got Here");
+					ChatroomResponse cr = new ChatroomResponse(username, Server.users.size(), this.getListOfUsers());
+					System.out.println("Got Here");
+
+					String chatroomResponse = gson.toJson(cr) + "\r\n";
+					System.out.println("Got Here");
+					System.out.println(chatroomResponse);
+
+					out.writeBytes(chatroomResponse);
+					System.out.println("And over here");
+
 					ChatroomUpdate cu = new ChatroomUpdate("enter", username);
-					String chatroomUpdate = gson.toJson(cu);
+					String chatroomUpdate = gson.toJson(cu) + "\r\n";
 					DataOutputStream outBroadcast = null;
+					
+					System.out.println("Please be here");
+
+					System.out.println(this.getListOfUsers());
 					for (String u : this.getListOfUsers())
 					{
+						System.out.println("HERE");
 						Socket broadcast = Server.users.get(u);
+						System.out.println("HERE");
+
 						outBroadcast = new DataOutputStream(broadcast.getOutputStream());
+						System.out.println("HERE");
+
 						outBroadcast.writeBytes(chatroomUpdate);
 					}
 					
@@ -81,7 +100,7 @@ public class Handler
 						to = cs.to;
 
 					ChatroomBroadcast cb = new ChatroomBroadcast(from, to, message, message_length);
-					String chatroomBroadcast = gson.toJson(cb);
+					String chatroomBroadcast = gson.toJson(cb) + "\r\n";
 
 					DataOutputStream outBroadcast = null;
 					for (String u : to)
@@ -97,7 +116,7 @@ public class Handler
 					String user = ce.id;
 
 					ChatroomUpdate cu = new ChatroomUpdate("leave", user);
-					String chatroomUpdate = gson.toJson(cu);
+					String chatroomUpdate = gson.toJson(cu) + "\r\n";
 
 					DataOutputStream outBroadcast = null;
 					for (String u : this.getListOfUsers())
@@ -106,13 +125,12 @@ public class Handler
 						outBroadcast = new DataOutputStream(broadcast.getOutputStream());
 						outBroadcast.writeBytes(chatroomUpdate);
 					}
-					
 					break;
 
 				} else
 				{
 					ChatroomError ce = new ChatroomError("unexpected_dealio_type", username);
-					String chatroomError = gson.toJson(ce);
+					String chatroomError = gson.toJson(ce) + "\r\n";
 					out.writeBytes(chatroomError);
 				}
 			}
@@ -126,7 +144,6 @@ public class Handler
 		 System.out.println("closing socket");
 		 Server.users.get(username).close();
 		 Server.users.remove(username);
-		 in.close();
 		 }
 
 	}
