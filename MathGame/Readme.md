@@ -1,0 +1,1 @@
+This project was made for my Software Engineering class. I chose it to include in my portfolio because I am really proud of the work that I did on it. We were put in groups of 3 or 4 and told to create a math game for 1st and 2nd grade students. We were given a list of requirements and the rest of the semester consisted of our groups working on our projects.
